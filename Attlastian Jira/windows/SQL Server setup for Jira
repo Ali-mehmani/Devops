@@ -1,0 +1,143 @@
+#  Create SQL Server Database for Jira
+
+  
+
+### 1. Install SQL Server (if not already installed)
+
+Ensure you have Microsoft SQL Server installed and running on your system. You can download it from Microsoft's official site and install it if not already done.
+
+  
+
+### 2. Open SQL Server Management Studio (SSMS)
+
+Open SQL Server Management Studio (SSMS) to create the database for Jira.
+
+  
+
+### 3. Create a New Database
+
+In SSMS, connect to your SQL Server instance.
+
+In the Object Explorer,
+
+  
+
+* right-click on Databases.
+
+* Select New Database.
+
+  
+
+### 4. Configure the Database
+
+* Database Name: Enter a meaningful name like **`jiradb`** or something similar.
+
+  
+
+* Owner: The owner can be left as sa (default SQL Server system admin), or you can specify another user with administrative rights.
+
+  
+
+* Database Files: You can leave these settings as default unless you have specific requirements for file growth or initial size.
+
+  
+
+### 5. Set Collation (Important for Jira)
+
+Jira requires a specific collation setting. You must ensure the database collation is set to SQL_Latin1_General_CP437_CI_AI..
+
+  
+
+In the New Database dialog, click on the Options tab on the left.
+
+Under the Collation dropdown, ensure it is set to SQL_Latin1_General_CP437_CI_AI..
+
+  
+
+### 6. Create a Database User for Jira
+
+Jira will need a dedicated SQL Server login to access the database. You can create a user for Jira as follows:
+
+  
+
+* In SSMS, navigate to Security > Logins.
+
+  
+
+* Right-click on Logins, then click New Login.
+
+  
+
+Enter the following details:
+
+  
+
+* Login Name: A name for the user, e.g., Jirauser.
+
+  
+
+* Authentication: Use SQL Server Authentication and set a password.
+
+  
+
+* Default Database: Set this to the database you created earlier (e.g., jiradb).
+
+  
+
+* User Mapping: On the left-hand side of the dialog, click User Mapping. Map the login to the Jira database, and set the role to db_owner.
+
+  
+
+### 7. Grant Permissions to Jira User
+
+Make sure the Jirauser has the necessary permissions:
+
+  
+
+In the Database section, select your Jira database.
+
+In the User Mapping section, ensure the db_owner role is selected.
+
+  
+
+### 8. Set Config for Isolattion
+
+  
+
+* Open new Query And Type:
+
+  
+
+```
+
+ALTER DATABASE jiradb
+
+SET READ_COMMITTED_SNAPSHOT ON;
+
+```
+
+  
+
+### 10. Configure Jira to Connect to the Database
+
+Now that you have your SQL Server database and user created, go back to the Jira installation process:
+
+  
+
+Database Type: Select Microsoft SQL Server.
+
+Database Hostname: Enter the hostname of your SQL Server (e.g., localhost or the IP address of the server).
+
+Database Name: Enter the name of the database you created (e.g., jiradb).
+
+Username: Enter the SQL Server login you created for Jira (e.g., Jirauser).
+
+Password: Enter the password you set for the jira_user.
+
+Database Port: The default SQL Server port is 1433, but this might vary if you have a non-default configuration.
+
+  
+
+### 9. Complete the Jira Installation
+
+Once you've filled out the database details and Jira connects successfully, you can proceed with the rest of the Jira setup.
