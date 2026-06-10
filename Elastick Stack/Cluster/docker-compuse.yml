@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+  elasticsearch:
+    image: docker.io/library/elasticsearch:7.10.2
+    environment:
+      - discovery.type=single-node
+      - ELASTIC_PASSWORD=changeme
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    networks:
+      - elk
+
+  logstash:
+    image: docker.io/library/logstash:7.10.2
+    environment:
+      - xpack.monitoring.enabled=false
+      - xpack.management.enabled=false
+    volumes:
+      - ./logstash/config:/usr/share/logstash/config
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    image: docker.io/library/kibana:7.10.2
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_PASSWORD=changeme
+    ports:
+      - "5601:5601"
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+
+volumes:
+  esdata:
+    driver: local
+
+networks:
+  elk:
+    driver: bridge
